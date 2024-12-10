@@ -14,22 +14,22 @@ import (
 // the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.
 
 type AgentPromotionDividendTrans struct {
-	CompanyId        int64           `gorm:"column:company_id;not null;comment:公司id" json:"company_id"`
-	AgentId          int64           `gorm:"column:agent_id;not null;comment:代理id" json:"agent_id"`
-	OrderId          string          `gorm:"column:order_id;not null;comment:业务订单id" json:"order_id"`
+	CompanyId        int64           `gorm:"column:company_id;not nulls;comment:公司id" json:"company_id"`
+	AgentId          int64           `gorm:"column:agent_id;not nulls;comment:代理id" json:"agent_id"`
+	OrderId          string          `gorm:"column:order_id;not nulls;comment:业务订单id" json:"order_id"`
 	OrderAmount      decimal.Decimal `gorm:"column:order_amount;type:decimal(20,6);comment:订单金额" json:"order_amount"`
-	OrderTime        int64           `gorm:"column:order_time;not null;comment:订单时间" json:"order_time"`
-	CurrencyId       int32           `gorm:"column:currency_id;not null;comment:币种id" json:"currency_id"`
-	Currency         string          `gorm:"column:currency;not null;comment:币种" json:"currency"`
-	DividendMode     int32           `gorm:"column:dividend_mode;not null;default:0;comment:代理分红模式" json:"dividend_mode"`
-	DividendPercent  int32           `gorm:"column:dividend_percent;not null;default:0;comment:代理分红比例" json:"dividend_percent"`
+	OrderTime        int64           `gorm:"column:order_time;not nulls;comment:订单时间" json:"order_time"`
+	CurrencyId       int32           `gorm:"column:currency_id;not nulls;comment:币种id" json:"currency_id"`
+	Currency         string          `gorm:"column:currency;not nulls;comment:币种" json:"currency"`
+	DividendMode     int32           `gorm:"column:dividend_mode;not nulls;default:0;comment:代理分红模式" json:"dividend_mode"`
+	DividendPercent  int32           `gorm:"column:dividend_percent;not nulls;default:0;comment:代理分红比例" json:"dividend_percent"`
 	DividendAmount   decimal.Decimal `gorm:"column:dividend_amount;type:decimal(20,6);comment:分摊金额" json:"dividend_amount"`
-	CreateTime       int64           `gorm:"column:create_time;autoCreateTime;not null;comment:创建时间" json:"create_time"`
-	PromotionId      int64           `gorm:"column:promotion_id;not null;comment:活动id" json:"promotion_id"`
-	PromotionTitle   string          `gorm:"column:promotion_title;not null;comment:活动描述" json:"promotion_title"`
-	PromotionInfo    datatypes.JSON  `gorm:"column:promotion_info;not null;comment:活动信息" json:"promotion_info"`
-	DepositOrderInfo datatypes.JSON  `gorm:"column:deposit_order_info;not null;comment:入账信息" json:"deposit_order_info"`
-	ProportionalInfo datatypes.JSON  `gorm:"column:proportional_info;not null;comment:分成信息" json:"proportional_info"`
+	CreateTime       int64           `gorm:"column:create_time;autoCreateTime;not nulls;comment:创建时间" json:"create_time"`
+	PromotionId      int64           `gorm:"column:promotion_id;not nulls;comment:活动id" json:"promotion_id"`
+	PromotionTitle   string          `gorm:"column:promotion_title;not nulls;comment:活动描述" json:"promotion_title"`
+	PromotionInfo    datatypes.JSON  `gorm:"column:promotion_info;not nulls;comment:活动信息" json:"promotion_info"`
+	DepositOrderInfo datatypes.JSON  `gorm:"column:deposit_order_info;not nulls;comment:入账信息" json:"deposit_order_info"`
+	ProportionalInfo datatypes.JSON  `gorm:"column:proportional_info;not nulls;comment:分成信息" json:"proportional_info"`
 }
 
 func InitDB() *gorm.DB {

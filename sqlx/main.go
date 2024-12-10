@@ -79,7 +79,7 @@ func main() {
 	fmt.Printf("%#v\n", jason)
 	// Person{FirstName:"Jason", LastName:"Moiron", Email:"jmoiron@jmoiron.net"}
 
-	// if you have null fields and use SELECT *, you must use sql.Null* in your struct
+	// if you have nulls fields and use SELECT *, you must use sql.Null* in your struct
 	places := []Place{}
 	err = db.Select(&places, "SELECT * FROM place ORDER BY telcode ASC")
 	if err != nil {

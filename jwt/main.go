@@ -1,171 +1,75 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"os"
+	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"time"
-
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/gin-gonic/gin"
 )
 
-type login struct {
-	Username string `form:"username" json:"username" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-}
+var secretKey = []byte("my_secret_key") // 用于签名的密钥
 
-var (
-	identityKey = "id"
-	port        string
-)
-
-// User demo
-type User struct {
-	UserName  string
-	FirstName string
-	LastName  string
-}
-
-func init() {
-	port = os.Getenv("PORT")
-	if port == "" {
-		port = "8000"
-	}
+// 自定义 Claims 类型
+type CustomClaims struct {
+	UserID    int `json:"user_id"`
+	CompanyID int `json:"company_id"`
+	jwt.RegisteredClaims
 }
 
 func main() {
-	engine := gin.Default()
-	// the jwt middleware
-	authMiddleware, err := jwt.New(initParams())
+	token, err := genJwt()
 	if err != nil {
-		log.Fatal("JWT Error:" + err.Error())
+		fmt.Println("Error generating token:", err)
+		return
+	}
+	fmt.Println("Generated Token:", token)
+
+	_, err = validateJwt(token)
+	if err != nil {
+		fmt.Println("Error validating token:", err)
 	}
 
-	// register middleware
-	engine.Use(handlerMiddleWare(authMiddleware))
+}
 
-	// register route
-	registerRoute(engine, authMiddleware)
-
-	// start http server
-	if err = http.ListenAndServe(":"+port, engine); err != nil {
-		log.Fatal(err)
+func genJwt() (string, error) {
+	// 自定义的 Claims
+	claims := CustomClaims{
+		UserID: 123, // 用户 ID
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)), // 1 小时后过期
+			IssuedAt:  jwt.NewNumericDate(time.Now()),                // 签发时间
+		},
 	}
-}
+	// 创建一个 Token 对象
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-func registerRoute(r *gin.Engine, handle *jwt.GinJWTMiddleware) {
-	r.POST("/login", handle.LoginHandler)
-	r.NoRoute(handle.MiddlewareFunc(), handleNoRoute())
-
-	auth := r.Group("/auth", handle.MiddlewareFunc())
-	auth.GET("/refresh_token", handle.RefreshHandler)
-	auth.GET("/hello", helloHandler)
-}
-
-func handlerMiddleWare(authMiddleware *jwt.GinJWTMiddleware) gin.HandlerFunc {
-	return func(context *gin.Context) {
-		errInit := authMiddleware.MiddlewareInit()
-		if errInit != nil {
-			log.Fatal("authMiddleware.MiddlewareInit() Error:" + errInit.Error())
-		}
+	// 使用密钥签名 Token
+	signedToken, err := token.SignedString(secretKey)
+	if err != nil {
+		fmt.Println("Error signing token:", err)
+		return "", err
 	}
+
+	fmt.Println("Generated Token:", signedToken)
+	return signedToken, nil
 }
 
-func initParams() *jwt.GinJWTMiddleware {
+func validateJwt(token string) (bool, error) {
 
-	return &jwt.GinJWTMiddleware{
-		Realm:       "test zone",
-		Key:         []byte("secret key"),
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
-		IdentityKey: identityKey,
-		PayloadFunc: payloadFunc(),
-
-		IdentityHandler: identityHandler(),
-		Authenticator:   authenticator(),
-		Authorizator:    authorizator(),
-		Unauthorized:    unauthorized(),
-		TokenLookup:     "header: Authorization, query: token, cookie: jwt",
-		// TokenLookup: "query:token",
-		// TokenLookup: "cookie:token",
-		TokenHeadName: "Bearer",
-		TimeFunc:      time.Now,
-	}
-}
-
-func payloadFunc() func(data interface{}) jwt.MapClaims {
-	return func(data interface{}) jwt.MapClaims {
-		if v, ok := data.(*User); ok {
-			return jwt.MapClaims{
-				identityKey: v.UserName,
-			}
-		}
-		return jwt.MapClaims{}
-	}
-}
-
-func identityHandler() func(c *gin.Context) interface{} {
-	return func(c *gin.Context) interface{} {
-		claims := jwt.ExtractClaims(c)
-		return &User{
-			UserName: claims[identityKey].(string),
-		}
-	}
-}
-
-func authenticator() func(c *gin.Context) (interface{}, error) {
-	return func(c *gin.Context) (interface{}, error) {
-		var loginVals login
-		if err := c.ShouldBind(&loginVals); err != nil {
-			return "", jwt.ErrMissingLoginValues
-		}
-		userID := loginVals.Username
-		password := loginVals.Password
-
-		if (userID == "admin" && password == "admin") || (userID == "test" && password == "test") {
-			return &User{
-				UserName:  userID,
-				LastName:  "Bo-Yi",
-				FirstName: "Wu",
-			}, nil
-		}
-		return nil, jwt.ErrFailedAuthentication
-	}
-}
-
-func authorizator() func(data interface{}, c *gin.Context) bool {
-	return func(data interface{}, c *gin.Context) bool {
-		if v, ok := data.(*User); ok && v.UserName == "admin" {
-			return true
-		}
-		return false
-	}
-}
-
-func unauthorized() func(c *gin.Context, code int, message string) {
-	return func(c *gin.Context, code int, message string) {
-		c.JSON(code, gin.H{
-			"code":    code,
-			"message": message,
-		})
-	}
-}
-
-func handleNoRoute() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		claims := jwt.ExtractClaims(c)
-		log.Printf("NoRoute claims: %#v\n", claims)
-		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
-	}
-}
-
-func helloHandler(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	user, _ := c.Get(identityKey)
-	c.JSON(200, gin.H{
-		"userID":   claims[identityKey],
-		"userName": user.(*User).UserName,
-		"text":     "Hello World.",
+	// 验证和解析 Token
+	parsedToken, err := jwt.ParseWithClaims(token, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return secretKey, nil
 	})
+
+	if err != nil {
+		fmt.Println("Error parsing token:", err)
+		return false, err
+	}
+
+	if claims, ok := parsedToken.Claims.(*CustomClaims); ok && parsedToken.Valid {
+		fmt.Println("Token is valid!")
+		fmt.Println("UserID:", claims.UserID)
+	} else {
+		fmt.Println("Invalid token.")
+	}
+	return true, nil
 }
