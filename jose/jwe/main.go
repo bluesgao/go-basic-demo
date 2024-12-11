@@ -81,7 +81,10 @@ func main() {
 
 	// 序列化 JWE
 	jweString, _ := encryptedJWE.CompactSerialize()
-	fmt.Printf("Encrypted JWE: %s\n", jweString)
+	fmt.Printf("CompactSerialize JWE: %s\n", jweString)
+
+	fullJweString := encryptedJWE.FullSerialize()
+	fmt.Printf("FullSerialize JWE: %s\n", fullJweString)
 
 	// --- 3. 解密 JWE ---
 	// 解析加密的 JWE
@@ -107,7 +110,7 @@ func main() {
 	}
 
 	// 验证签名并提取 Claims
-	var verifiedClaims jwt.Claims
+	var verifiedClaims CustomClaims
 	err = parsedJWT.Claims(signingKey, &verifiedClaims)
 	if err != nil {
 		log.Fatalf("Failed to verify JWT: %v", err)
