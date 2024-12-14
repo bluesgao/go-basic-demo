@@ -8,6 +8,7 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.10.0
 	github.com/bits-and-blooms/bitset v1.19.1
 	github.com/cespare/xxhash/v2 v2.3.0
+	github.com/deatil/go-encoding v1.0.2007
 	github.com/expr-lang/expr v1.16.9
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-gonic/gin v1.10.0

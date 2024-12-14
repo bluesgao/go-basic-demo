@@ -202,6 +202,26 @@ create table `member`
   charset = utf8mb4
   row_format = dynamic comment '会员基本信息表';
 
+create table `member_level`
+(
+    `id`             bigint auto_increment,
+    `tenant_id`     bigint       default 0  not null comment '租户ID',
+    `level`    int  default 0 not null comment '会员等级',
+    `level_avatar`  varchar(128) DEFAULT '' COMMENT '等级图标',
+    `point`    int  default 0 not null comment '达到等级的分数',
+    `remark`  varchar(128) DEFAULT NULL COMMENT '描述',
+    `create_by`      varchar(64)  DEFAULT NULL COMMENT '创建者',
+    `update_by`      varchar(64)  DEFAULT NULL COMMENT '更新者',
+    `created_at`     datetime(3) DEFAULT NULL COMMENT '创建时间',
+    `updated_at`     datetime(3) DEFAULT NULL COMMENT '最后更新时间',
+    `deleted_at`     datetime(3) DEFAULT NULL COMMENT '删除时间',
+    primary key (`id`),
+    unique `uniq_tenant_level_id` (`tenant_id`,`level`)
+) engine = InnoDB
+  charset = utf8mb4
+  row_format = dynamic comment '会员等级表';
+
+
 create table `member_tag`
 (
     `id`             bigint auto_increment,
@@ -237,6 +257,61 @@ create table `member_group`
 ) engine = InnoDB
   charset = utf8mb4
   row_format = dynamic comment '会员分组表';
+
+
+create table `member_point`
+(
+    `id`             bigint auto_increment,
+    `tenant_id`     bigint       default 0  not null comment '租户ID',
+    `member_id`      bigint       default 0  not null comment '会员ID',
+    `point`         int  default 0 not null comment '会员积分',
+    `create_by`      varchar(64)  DEFAULT NULL COMMENT '创建者',
+    `update_by`      varchar(64)  DEFAULT NULL COMMENT '更新者',
+    `created_at`     datetime(3) DEFAULT NULL COMMENT '创建时间',
+    `updated_at`     datetime(3) DEFAULT NULL COMMENT '最后更新时间',
+    `deleted_at`     datetime(3) DEFAULT NULL COMMENT '删除时间',
+    primary key (`id`),
+    unique `uniq_tenant_member_id` (`tenant_id`,`member_id`)
+) engine = InnoDB
+  charset = utf8mb4
+  row_format = dynamic comment '会员积分表';
+
+create table `member_point_record`
+(
+    `id`             bigint auto_increment,
+    `tenant_id`     bigint       default 0  not null comment '租户ID',
+    `member_id`      bigint       default 0  not null comment '会员ID',
+    `biz_type`         int  default 0 not null comment '业务类型',
+    `biz_id`         bigint  default 0 not null comment '业务ID',
+    `reward_point`         int  default 0 not null comment '奖励积分',
+    `remark`  varchar(128) DEFAULT NULL COMMENT '描述',
+    `create_by`      varchar(64)  DEFAULT NULL COMMENT '创建者',
+    `update_by`      varchar(64)  DEFAULT NULL COMMENT '更新者',
+    `created_at`     datetime(3) DEFAULT NULL COMMENT '创建时间',
+    `updated_at`     datetime(3) DEFAULT NULL COMMENT '最后更新时间',
+    `deleted_at`     datetime(3) DEFAULT NULL COMMENT '删除时间',
+    primary key (`id`),
+    unique `uniq_tenant_member_id` (`tenant_id`,`member_id`)
+) engine = InnoDB
+  charset = utf8mb4
+  row_format = dynamic comment '会员积分变更记录表';
+
+create table `member_level_relation`
+(
+    `id`             bigint auto_increment,
+    `tenant_id`     bigint       default 0  not null comment '租户ID',
+    `member_id`      bigint       default 0  not null comment '会员ID',
+    `level_id`    bigint  default '' not null comment '会员等级ID',
+    `create_by`      varchar(64)  DEFAULT NULL COMMENT '创建者',
+    `update_by`      varchar(64)  DEFAULT NULL COMMENT '更新者',
+    `created_at`     datetime(3) DEFAULT NULL COMMENT '创建时间',
+    `updated_at`     datetime(3) DEFAULT NULL COMMENT '最后更新时间',
+    `deleted_at`     datetime(3) DEFAULT NULL COMMENT '删除时间',
+    primary key (`id`),
+    unique `uniq_tenant_member_tag_id` (`tenant_id`,`member_id`,`tag_id`)
+) engine = InnoDB
+  charset = utf8mb4
+  row_format = dynamic comment '会员与会员等级关系表';
 
 create table `member_tag_relation`
 (
