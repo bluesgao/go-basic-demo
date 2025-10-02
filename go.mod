@@ -23,6 +23,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/hashicorp/golang-lru/v2 v2.0.7
+	github.com/hibiken/asynq v0.25.1
 	github.com/huandu/go-sqlbuilder v1.30.1
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/mgtv-tech/jetcache-go v1.2.0
@@ -30,7 +31,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/pquerna/otp v1.4.0
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
-	github.com/redis/go-redis/v9 v9.6.1
+	github.com/redis/go-redis/v9 v9.7.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sethvargo/go-password v0.3.1
 	github.com/shopspring/decimal v1.4.0
@@ -93,6 +94,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
+	github.com/spf13/cast v1.7.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
@@ -108,6 +110,7 @@ require (
 	golang.org/x/sync v0.9.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
-	google.golang.org/protobuf v1.34.2 // indirect
+	golang.org/x/time v0.8.0 // indirect
+	google.golang.org/protobuf v1.35.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
